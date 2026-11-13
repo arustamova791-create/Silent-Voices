@@ -1,10 +1,11 @@
 import { createServer } from 'node:http'
-import { createReadStream, mkdirSync, writeFileSync, unlinkSync } from 'node:fs'
-import { join } from 'node:path'
+import { createReadStream, mkdirSync, writeFileSync, unlinkSync, existsSync, statSync } from 'node:fs'
+import { extname, join, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { DatabaseSync } from 'node:sqlite'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
+const buildDir = join(root, 'dist')
 const dataDir = process.env.SOS_DATA_DIR || join(root, 'data')
 const uploadDir = join(dataDir, 'photos')
 mkdirSync(uploadDir, { recursive: true })
@@ -34,6 +35,53 @@ const now = () => new Date().toISOString()
 function send(res, code, value) {
   res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' })
   res.end(JSON.stringify(value))
+}
+
+const contentTypes = {
+  '.css': 'text/css; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.ico': 'image/x-icon',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+}
+
+function serveFrontend(req, res, pathname) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return false
+
+  let decodedPath
+  try { decodedPath = decodeURIComponent(pathname) } catch {
+    res.writeHead(400).end('Bad request')
+    return true
+  }
+
+  const requestedPath = resolve(buildDir, `.${decodedPath}`)
+  if (requestedPath !== buildDir && !requestedPath.startsWith(`${buildDir}${sep}`)) {
+    res.writeHead(403).end('Forbidden')
+    return true
+  }
+
+  let filePath = requestedPath
+  if (existsSync(filePath) && statSync(filePath).isDirectory()) filePath = join(filePath, 'index.html')
+  if (!existsSync(filePath) && !extname(decodedPath)) filePath = join(buildDir, 'index.html')
+  if (!existsSync(filePath) || !statSync(filePath).isFile()) {
+    res.writeHead(404).end('Not found')
+    return true
+  }
+
+  res.writeHead(200, {
+    'content-type': contentTypes[extname(filePath).toLowerCase()] || 'application/octet-stream',
+    'x-content-type-options': 'nosniff',
+  })
+  if (req.method === 'HEAD') res.end()
+  else createReadStream(filePath).pipe(res)
+  return true
 }
 
 async function readJson(req) {
@@ -140,12 +188,16 @@ const server = createServer(async (req, res) => {
       db.prepare('INSERT INTO status_history (request_id, status, changed_at) VALUES (?, ?, ?)').run(id, status, changed)
       return send(res, 200, { request: getRequest(id) })
     }
-    return send(res, 404, { error: 'API endpoint not found.' })
+    if (url.pathname.startsWith('/api/')) return send(res, 404, { error: 'API endpoint not found.' })
+    if (serveFrontend(req, res, url.pathname)) return
+    return send(res, 404, { error: 'Not found.' })
   } catch (error) {
     console.error(error)
     return send(res, error.status || 500, { error: error.status ? error.message : 'Local server could not save the request.' })
   }
 })
 
-const port = Number(process.env.API_PORT || 3001)
-server.listen(port, '127.0.0.1', () => console.log(`Local SOS API listening at http://127.0.0.1:${port}`))
+const isRenderService = Boolean(process.env.PORT)
+const port = Number(process.env.PORT || process.env.API_PORT || 3001)
+const host = process.env.HOST || '0.0.0.0'
+server.listen(port, host, () => console.log(`Səssizlərin səsi listening at http://${host}:${port}${isRenderService ? '' : ' (local API + built frontend)'}`))
