@@ -2,6 +2,19 @@ import React, { useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './style.css'
 
+const siteNames = { az: 'Səssizlərin səsi', ru: 'Голос безмолвных' }
+const pageTitles = {
+  az: 'Silent Voices — Səssizlərin səsi · Onların yanında ol',
+  ru: 'Silent Voices — Голос безмолвных · Будь рядом',
+}
+const pageDescriptions = {
+  az: 'Səssizlərin səsi — Azərbaycanda küçə heyvanlarına sevgi, qayğı və yeni bir başlanğıc.',
+  ru: 'Голос безмолвных — любовь, забота и новый шанс для бездомных животных в Азербайджане.',
+}
+const BrandName = ({ lang }) => lang === 'az'
+  ? <><span>Səssizlərin</span><b>səsi</b></>
+  : <><span>Голос</span><b>безмолвных</b></>
+
 const copy = {
   az: {
     nav: ['Haqqımızda', 'Sahibləndirmə', 'Təcili yardım', 'Könüllü ol', 'Əlaqə'],
@@ -12,7 +25,7 @@ const copy = {
     primary: 'Bir həyat dəyiş', secondary: 'Hekayələrlə tanış ol',
     note: 'Kiçik bir addım, böyük bir ümid.',
     aboutKicker: 'BİZ KİMİK?', aboutTitle: 'Dəyişiklik mərhəmətlə başlayır.',
-    aboutText: 'Səssizlərin səsi — Azərbaycanda küçə heyvanlarının həyatını yaxşılaşdırmaq üçün bir araya gələn könüllülərin təşəbbüsüdür. Xilas edirik, müalicə etdiririk, qayğı göstəririk və onlara sevgi dolu ailə tapırıq.',
+    aboutText: 'Səssizlərin səsi (Silent Voices) — Azərbaycanda küçə heyvanlarının həyatını yaxşılaşdırmaq üçün bir araya gələn könüllülərin təşəbbüsüdür. Xilas edirik, müalicə etdiririk, qayğı göstəririk və onlara sevgi dolu ailə tapırıq.',
     stat1: 'xilas edilmiş can', stat2: 'isti yuva tapıb', stat3: 'qayğıkeş könüllü', statsDemo: 'Nümayiş göstəriciləri',
     storyKicker: 'BİZİM BALACALAR', storyTitle: 'Sevgi dolu bir ev gözləyirlər.',
     storySub: 'Bəlkə də növbəti gözəl hekayə səninlə başlayacaq.',
@@ -31,7 +44,7 @@ const copy = {
     ],
     details: 'Ətraflı öyrən', quote: 'Onlar bizə güvənməyi öyrədir.<br />Biz isə onlara tək olmadıqlarını göstəririk.',
     contactKicker: 'ƏLAQƏ SAXLA', contactTitle: 'Bir mesajın, bir həyatın başlanğıcı ola bilər.', contactText: 'Sualın var, könüllü olmaq istəyirsən, yoxsa balacalardan birinə yuva açmaq? Bizə yaz — birlikdə ən gözəl yolu taparıq.',
-    email: 'Salam deyək', instagram: 'Bizi Instagram-da izlə', contactDemo: 'Nümayiş əlaqəsi', footer: 'Sevgi ilə, bütün səssiz canların yanında.', rights: '© 2026 Səssizlərin səsi. Sevgi ilə hazırlanıb.',
+    email: 'Salam deyək', instagram: 'Bizi Instagram-da izlə', contactDemo: 'Nümayiş əlaqəsi', footer: 'Sevgi ilə, bütün səssiz canların yanında.', rights: '© 2026 Silent Voices · Səssizlərin səsi. Sevgi ilə hazırlanıb.',
     modalTitle: 'Birlikdə başlayaq', modalText: 'Bu səhifə nümayiş məqsədi daşıyır. Heyvanlarla tanış olmaq və cari ehtiyacları öyrənmək üçün bizə yaz.', modalClose: 'Bağla',
     emergencyKicker: 'TƏCİLİ YARDIM', emergencyTitle: 'Qəza nəticəsində xəsarət almış it və ya pişik gördün?', emergencyText: 'Məlumatı yalnız nümayiş üçün doldur. Heç nə serverə göndərilmir və şəxsi məlumatlar saxlanmır. Bu forma xilasedicilərə bildiriş göndərmir.', demoLabel: 'NÜMAYİŞ REJİMİ · REAL MÜRACİƏT GÖNDƏRİLMİR', sosTitle: 'SOS · Kömək çağırışı', animalLabel: 'Heyvanın növü', dog: 'İt', cat: 'Pişik', other: 'Digər', locationLabel: 'Hadisə yeri', cityLabel: 'Şəhər', cityPlaceholder: 'Məsələn, Bakı', streetLabel: 'Küçə', streetPlaceholder: 'Küçə və ya prospekt', landmarkLabel: 'Yaxınlıqda orientir', landmarkPlaceholder: 'Bina, dayanacaq və ya tanınan yer', geoButton: 'Yerimi müəyyən et', geoHint: 'Düyməyə basdıqda brauzer geolokasiyaya icazə istəyəcək.', geoSuccess: 'Koordinatlar əlavə edildi.', geoError: 'Məkan müəyyən edilmədi. Ünvanı əl ilə daxil edə bilərsən.', mapLink: 'Xəritədə bax', dateLabel: 'Hadisənin tarixi və vaxtı', stateLabel: 'Heyvanın vəziyyəti', conscious: 'Şüuru açıqdır', notMoving: 'Hərəkət etmir', bleeding: 'Qanaxma var', unknown: 'Naməlum', photoLabel: 'Heyvanın fotosu (istəyə bağlı)', descriptionLabel: 'Vəziyyətin təsviri', descriptionPlaceholder: 'Nə baş verdiyini və görülənləri qısa təsvir et', contactLabel: 'Əlaqə telefonun (istəyə bağlı)', contactPlaceholder: '+994 __ ___ __ __', consentText: 'Əlaqə məlumatlarımın yalnız bu nümayiş formasında emal edilməsinə razıyam. Məlumatlar göndərilmir və saxlanmır.', sendDemo: 'SOS · Kömək çağırışı', formDone: 'Müraciət xilasedicilərə GÖNDƏRİLMƏDİ. Bu forma nümayiş rejimində işləyir, real kömək çağırışı deyil və məlumatları saxlamır.', fileHint: 'Foto yalnız bu səhifədə, yerli önizləmə kimi görünür.', safetyTitle: 'Kömək gələnədək nə edə bilərsən?', safetyItems: ['Öz təhlükəsizliyini və yol hərəkətindən məsafəni qoru; təhlükə varsa təcili xidmətlərə müraciət et.', 'Heyvana sakit səslə yaxınlaş, məsafə saxla və mümkündürsə ətrafdakıları xəbərdar et.', 'Heyvanı tərpətmə, yaralara toxunma və dərman, yemək və ya su vermə. Təlimli mütəxəssisləri gözlə.'], geoUnsupported: 'Bu brauzerdə geolokasiya mümkün deyil. Ünvanı əl ilə daxil et.', adoptKicker: 'SAHİBLƏNDİRMƏ', adoptTitle: 'Yeni ailəsini gözləyənlər.', adoptText: 'Bu profillər nümunədir. Mövcud heyvanlar və sahibləndirmə qaydaları barədə məlumat hələ əlavə edilməyib.', demoPet: 'NÜMUNƏ PROFİL', volunteerKicker: 'KÖNÜLLÜ OL', volunteerTitle: 'Yaxşılıq üçün vaxtını paylaş.', volunteerText: 'Bu qeydiyyat nümayiş üçündür. Əlaqə məlumatları yadda saxlanmır və heç yerə göndərilmir.', nameLabel: 'Ad', namePlaceholder: 'Adın', skillsLabel: 'Necə kömək edə bilərsən?', skillsPlaceholder: 'Məsələn, gəzinti, foto, daşınma, paylaşım', volunteerDone: 'Nümayiş tamamlandı. Məlumatların göndərilmədi və saxlanılmadı.', nameRequired: 'Zəhmət olmasa adını və necə kömək edə biləcəyini yaz.',
   },
@@ -44,7 +57,7 @@ const copy = {
     primary: 'Измени одну жизнь', secondary: 'Познакомиться с ними',
     note: 'Маленький шаг — большая надежда.',
     aboutKicker: 'КТО МЫ?', aboutTitle: 'Перемены начинаются с доброты.',
-    aboutText: '«Голос безмолвных» — инициатива волонтёров, которые объединились, чтобы менять жизнь бездомных животных в Азербайджане. Мы спасаем, лечим, заботимся и находим для них любящие семьи.',
+    aboutText: '«Голос безмолвных» (Silent Voices) — инициатива волонтёров, которые объединились, чтобы менять жизнь бездомных животных в Азербайджане. Мы спасаем, лечим, заботимся и находим для них любящие семьи.',
     stat1: 'спасённых жизней', stat2: 'обрели дом', stat3: 'добрых волонтёров', statsDemo: 'Демонстрационные цифры',
     storyKicker: 'НАШИ МАЛЫШИ', storyTitle: 'Они ждут дом, полный любви.',
     storySub: 'Возможно, следующая счастливая история начнётся с тебя.',
@@ -63,7 +76,7 @@ const copy = {
     ],
     details: 'Узнать подробнее', quote: 'Они учат нас доверять.<br />А мы показываем, что они не одни.',
     contactKicker: 'БУДЕМ НА СВЯЗИ', contactTitle: 'Одно сообщение может стать началом новой жизни.', contactText: 'Есть вопрос, хочешь стать волонтёром или подарить дом одному из малышей? Напиши нам — вместе найдём лучший путь.',
-    email: 'Написать нам', instagram: 'Мы в Instagram', contactDemo: 'Демонстрационный контакт', footer: 'С любовью и заботой — рядом с каждым.', rights: '© 2026 Голос безмолвных. Сделано с любовью.',
+    email: 'Написать нам', instagram: 'Мы в Instagram', contactDemo: 'Демонстрационный контакт', footer: 'С любовью и заботой — рядом с каждым.', rights: '© 2026 Silent Voices · Голос безмолвных. Сделано с любовью.',
     modalTitle: 'Начнём вместе', modalText: 'Это демонстрационная страница. Напиши нам, чтобы познакомиться с животными и узнать об их актуальных потребностях.', modalClose: 'Закрыть',
     emergencyKicker: 'СРОЧНАЯ ПОМОЩЬ', emergencyTitle: 'Увидели пострадавшую в ДТП собаку или кошку?', emergencyText: 'Заполните форму только для демонстрации. Данные не отправляются на сервер, личная информация не сохраняется. Спасатели не получат это сообщение.', demoLabel: 'ДЕМО-РЕЖИМ · РЕАЛЬНАЯ ЗАЯВКА НЕ ОТПРАВЛЯЕТСЯ', sosTitle: 'SOS · Вызвать помощь', animalLabel: 'Вид животного', dog: 'Собака', cat: 'Кошка', other: 'Другое', locationLabel: 'Место происшествия', cityLabel: 'Город', cityPlaceholder: 'Например, Баку', streetLabel: 'Улица', streetPlaceholder: 'Улица или проспект', landmarkLabel: 'Ближайший ориентир', landmarkPlaceholder: 'Здание, остановка или известное место', geoButton: 'Определить геолокацию', geoHint: 'При нажатии браузер запросит разрешение на геолокацию.', geoSuccess: 'Координаты добавлены.', geoError: 'Не удалось определить место. Можно ввести адрес вручную.', mapLink: 'Посмотреть на карте', dateLabel: 'Дата и время происшествия', stateLabel: 'Состояние животного', conscious: 'В сознании', notMoving: 'Не двигается', bleeding: 'Кровотечение', unknown: 'Неизвестно', photoLabel: 'Фото животного (необязательно)', descriptionLabel: 'Описание ситуации', descriptionPlaceholder: 'Кратко опишите, что произошло и что вы заметили', contactLabel: 'Контактный телефон (необязательно)', contactPlaceholder: '+994 __ ___ __ __', consentText: 'Я согласен/согласна на обработку контактных данных только в этой демонстрационной форме. Данные не отправляются и не сохраняются.', sendDemo: 'SOS · Вызвать помощь', formDone: 'Заявка спасателям НЕ ОТПРАВЛЕНА. Форма работает в демонстрационном режиме, это не реальный вызов помощи, данные не сохраняются.', fileHint: 'Фото отображается только на этой странице в локальном предпросмотре.', safetyTitle: 'Что можно сделать до прибытия помощи?', safetyItems: ['Соблюдайте собственную безопасность и держитесь подальше от движения; при опасности обратитесь в экстренные службы.', 'Подойдите спокойно, сохраняя дистанцию, и по возможности предупредите окружающих.', 'Не перемещайте животное, не трогайте раны, не давайте лекарства, еду или воду. Дождитесь обученных специалистов.'], geoUnsupported: 'Геолокация недоступна в этом браузере. Введите адрес вручную.', adoptKicker: 'ПРИСТРОЙСТВО', adoptTitle: 'Они ждут свою семью.', adoptText: 'Эти профили приведены в качестве примера. Информация о доступных животных и правилах пристройства пока не добавлена.', demoPet: 'ПРИМЕР ПРОФИЛЯ', volunteerKicker: 'СТАНЬ ВОЛОНТЁРОМ', volunteerTitle: 'Поделись временем и заботой.', volunteerText: 'Эта регистрация работает в демо-режиме. Контакты не сохраняются и никуда не отправляются.', nameLabel: 'Имя', namePlaceholder: 'Ваше имя', skillsLabel: 'Как вы можете помочь?', skillsPlaceholder: 'Например, прогулки, фото, перевозка, публикации', volunteerDone: 'Демонстрация завершена. Данные не отправлялись и не сохранялись.', nameRequired: 'Укажите имя и чем вы можете помочь.',
   },
@@ -167,7 +180,7 @@ function VolunteerPanel() {
   const address = (item) => [item.city, item.street, item.landmark].filter(Boolean).join(', ')
 
   return <main className="volunteer-panel">
-    <header className="panel-header"><a className="brand" href="/"><span className="brand-mark">♡</span><span className="brand-name">səssizlərin<br /><b>səsi</b></span></a>
+    <header className="panel-header"><a className="brand" href="/" aria-label={siteNames[lang]}><span className="brand-mark">♡</span><span className="brand-name"><BrandName lang={lang} /></span></a>
       <div className="panel-actions"><div className="language"><button className={lang === 'az' ? 'active' : ''} onClick={() => { setLang('az'); document.documentElement.lang = 'az' }}>AZ</button><span>/</span><button className={lang === 'ru' ? 'active' : ''} onClick={() => { setLang('ru'); document.documentElement.lang = 'ru' }}>RU</button></div><a className="panel-back" href="/">{t.back} ↗</a></div>
     </header>
     <section className="panel-content">
@@ -204,6 +217,14 @@ function App() {
   const [coordinates, setCoordinates] = useState(null)
   const [geoMessage, setGeoMessage] = useState('')
   const t = { ...copy[lang], ...workflowCopy[lang] }
+
+  React.useEffect(() => {
+    document.title = pageTitles[lang]
+    document.documentElement.lang = lang
+    document.querySelector('meta[name="description"]')?.setAttribute('content', pageDescriptions[lang])
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', pageTitles[lang])
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', pageDescriptions[lang])
+  }, [lang])
 
   if (import.meta.env.DEV && (window.location.pathname === '/volunteer-panel' || window.location.pathname === '/volunteer-panel/')) return <VolunteerPanel />
 
@@ -268,8 +289,8 @@ function App() {
 
   return <>
     <header className="header">
-      <a className="brand" href="#top" aria-label="Səssizlərin səsi">
-        <span className="brand-mark">♡</span><span className="brand-name">səssizlərin<br /><b>səsi</b></span>
+      <a className="brand" href="#top" aria-label={siteNames[lang]}>
+        <span className="brand-mark">♡</span><span className="brand-name"><BrandName lang={lang} /></span>
       </a>
       <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">{menuOpen ? '×' : '☰'}</button>
       <nav className={menuOpen ? 'nav nav-open' : 'nav'}>
@@ -401,7 +422,7 @@ function App() {
         </div>
       </section>
     </main>
-    <footer className="footer"><a className="brand footer-brand" href="#top"><span className="brand-mark">♡</span><span className="brand-name">səssizlərin<br /><b>səsi</b></span></a><p>{t.footer}</p><small>{t.rights}</small></footer>
+    <footer className="footer"><a className="brand footer-brand" href="#top" aria-label={siteNames[lang]}><span className="brand-mark">♡</span><span className="brand-name"><BrandName lang={lang} /></span></a><p>{t.footer}</p><small>{t.rights}</small></footer>
   </>
 }
 
